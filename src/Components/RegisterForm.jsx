@@ -10,6 +10,7 @@ import {
   InputRightElement,
   Spacer,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { FaWhatsappSquare } from "react-icons/fa";
 
@@ -17,22 +18,22 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAPICall from "../CustomHooks/useAPICall";
 import { useDispatch } from "react-redux";
-import { Login, regsiter } from "../Redux/Login/action";
+import { Login } from "../Redux/Login/action";
 
 const initMsg = {
-  firstName: {
+  First_Name: {
     status: false,
     notice: "Please enter your First Name",
   },
-  lastName: {
+  Last_Name: {
     status: false,
     notice: "Please enter your Last Name",
   },
-  email: {
+  Email: {
     status: false,
     notice: "Please enter your Email",
   },
-  password1: {
+  password: {
     status: false,
     notice: "Please enter your Password",
   },
@@ -47,10 +48,10 @@ const initMsg = {
 };
 
 const initform = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  password1: "",
+  First_Name: "",
+  Last_Name: "",
+  Email: "",
+  password: "",
   password2: "",
 };
 
@@ -60,16 +61,17 @@ const RegisterForm = ({
   handleInputOtp,
   inputOtp,
   phoneNumber,
-  setPhoneNumber
+  setPhoneNumber,
+  otp,
 }) => {
+  const toast = useToast();
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
   const [form, setform] = useState(initform);
   const [msg, setMsg] = useState(initMsg);
-  const {baseUrl} = useAPICall()
-  const dispatch = useDispatch()
-  const { firstName, lastName, email, password1, password2 } = form;
-  
+  const { baseUrl } = useAPICall();
+  const dispatch = useDispatch();
+  const { First_Name, Last_Name, Email, password, password2 } = form;
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -79,26 +81,64 @@ const RegisterForm = ({
 
   const handleClick = () => setShow(!show);
 
-  const handleForm =async  (e) => {
+  const handleForm = async (e) => {
     // e.prevantDefault();
     setMsg(initMsg);
-    if (firstName === "") {
-      setMsg({ ...msg, firstName: { ...msg.firstName, status: true } });
-    } else if (lastName === "") {
-      setMsg({ ...msg, lastName: { ...msg.lastName, status: true } });
-    } else if (email === "") {
-      setMsg({ ...msg, email: { ...msg.email, status: true } });
-    } else if (password1 === "") {
-      setMsg({ ...msg, password1: { ...msg.password1, status: true } });
-    } else if (password2 === "" || password1 !== password2) {
+    if (First_Name === "") {
+      setMsg({ ...msg, First_Name: { ...msg.First_Name, status: true } });
+    } else if (Last_Name === "") {
+      setMsg({ ...msg, Last_Name: { ...msg.Last_Name, status: true } });
+    } else if (Email === "") {
+      setMsg({ ...msg, Email: { ...msg.Email, status: true } });
+    } else if (password === "") {
+      setMsg({ ...msg, password: { ...msg.password, status: true } });
+    } else if (password2 === "" || password !== password2) {
       setMsg({ ...msg, password2: { ...msg.password2, status: true } });
     } else if (handleInputOtp === "") {
       setMsg({ ...msg, otp: { ...msg.otp, status: true } });
     } else {
       if (handleOtp()) {
-        dispatch(regsiter(`${baseUrl}/users`,{...form,number:phoneNumber}))
-        dispatch(Login(`${baseUrl}/users?number=${phoneNumber}`))
-        navigate("/");
+        // dispatch(regsiter(`${baseUrl}/users`,{...form,number:phoneNumber}))
+        // let obj = {
+        //   Mobile_Number :phoneNumber
+        // }
+        // dispatch(Login(obj,inputOtp,otp))
+        let obj = {
+          First_Name: First_Name,
+          Last_Name: Last_Name,
+          Email: Email,
+          password: password,
+          Mobile_Number: phoneNumber,
+        };
+        let res = await fetch(`https://jiomart-server.cyclic.app/auth/Signup`, {
+          method: "POST",
+          body: JSON.stringify(obj),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        let res2 = await res.json();
+        if (res2.error) {
+        return  toast({
+            title: "User is Already Registered",
+            description: "Please Login",
+            position: "top",
+            status: "Error",
+            duration: 9000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: "Account created Successfully",
+            // description: "We've created your account for you.",
+            position: "top",
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+          });
+
+          return navigate("/");
+        }
       } else {
         setMsg({ ...msg, otp: { ...msg.otp, status: true } });
       }
@@ -125,65 +165,63 @@ const RegisterForm = ({
         <Input
           mb={"0px"}
           placeholder="Your First Name"
-          name="firstName"
+          name="First_Name"
           onChange={handleChange}
-          value={firstName}
+          value={First_Name}
         />
-        {msg.firstName.status && (
+        {msg.First_Name.status && (
           <Text fontSize="xs" color="crimson">
-            {msg.firstName.notice}
+            {msg.First_Name.notice}
           </Text>
         )}
         <Input
           mt={"30px"}
           placeholder="Your Last Name"
-          name="lastName"
+          name="Last_Name"
           onChange={handleChange}
-          value={lastName}
+          value={Last_Name}
         />
-        {msg.lastName.status && (
+        {msg.Last_Name.status && (
           <Text fontSize="xs" color="crimson">
-            {msg.lastName.notice}
+            {msg.Last_Name.notice}
           </Text>
         )}
         <Input
           mt={"30px"}
           placeholder="Your Email Id"
-          name="email"
+          name="Email"
           onChange={handleChange}
-          value={email}
+          value={Email}
         />
-        {msg.email.status && (
-          <Text   fontSize="xs" color="crimson">
-            {msg.email.notice}
+        {msg.Email.status && (
+          <Text fontSize="xs" color="crimson">
+            {msg.Email.notice}
           </Text>
         )}
-        <InputGroup mt={'30px'} size="md">
+        <InputGroup mt={"30px"} size="md">
           <Input
             mb={"30px"}
             pr="4.5rem"
             type={show ? "text" : "password"}
             placeholder="Enter password"
-            name="password1"
+            name="password"
             onChange={handleChange}
-            value={password1}
+            value={password}
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
               {show ? <ViewOffIcon /> : <ViewIcon />}
             </Button>
           </InputRightElement>
-          
         </InputGroup>
-        {msg.password1.status && (
-            <Text mt={'-30px'} pb='25px' fontSize="xs" color="crimson">
-              {msg.password1.notice}
-            </Text>
-          )}
+        {msg.password.status && (
+          <Text mt={"-30px"} pb="25px" fontSize="xs" color="crimson">
+            {msg.password.notice}
+          </Text>
+        )}
 
-        <InputGroup  size="md">
+        <InputGroup size="md">
           <Input
-            
             pr="4.5rem"
             type={show ? "text" : "password"}
             placeholder="Confirm password"
@@ -192,7 +230,7 @@ const RegisterForm = ({
             value={password2}
           />
           <InputRightElement width="4.5rem">
-            <Button  h="1.75rem" size="sm" onClick={handleClick}>
+            <Button h="1.75rem" size="sm" onClick={handleClick}>
               {show ? <ViewOffIcon /> : <ViewIcon />}
             </Button>
           </InputRightElement>
@@ -206,7 +244,6 @@ const RegisterForm = ({
             </Text>
           )}
         </Text>
-        
 
         <Flex mb={"1rem"} justifyContent={"center"} alignItems={"center"}>
           <Box p={"10px"} fontSize={"32px"} color={"#48df62"}>
@@ -245,7 +282,7 @@ const RegisterForm = ({
           bg="white"
           onClick={() => {
             navigate("/account/login");
-            setPhoneNumber("")
+            setPhoneNumber("");
           }}
         >
           Change

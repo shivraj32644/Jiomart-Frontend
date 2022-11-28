@@ -1,5 +1,6 @@
 export default function useAPICall() {
-  const baseUrl = `https://jiomartclone-backend.herokuapp.com`;
+  // const baseUrl = `https://jiomartclone-backend.herokuapp.com`;
+  const baseUrl = `https://jiomart-server.cyclic.app/`;
   
   const postData = async (url, input) => {
     try {

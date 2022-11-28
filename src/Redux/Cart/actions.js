@@ -1,24 +1,12 @@
+import axios from 'axios';
 import {
   REMOVE_FROM_CART,
   UPDATE_CART,
   ORDER_CONFIRMED
 } from './action_types';
+const URL = 'https://jiomart-server.cyclic.app/cart'
 
 
-export const updateCart = (payload) => {
-  if (payload === 'order-confirmed') {
-    return {
-      type: ORDER_CONFIRMED,
-    };
-  }
-
-  return payload.quantity !== 0
-    ? {
-        type: UPDATE_CART,
-        payload: payload,
-      }
-    : {
-        type: REMOVE_FROM_CART,
-        payload: payload.product.id,
-      };
-};
+export const getCartItem = (data) => async(dispatch) => {
+  let res = await axios.post(`${URL}/addCart`, data);
+}

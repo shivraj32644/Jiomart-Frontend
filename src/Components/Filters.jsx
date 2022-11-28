@@ -48,6 +48,7 @@ export default function Filters({
 }) {
   const filters = filterList[product_category];
   // handleUrlFilter(urlFilterInit)
+  // console.log(urlFilter)
 
   const handleChange = (e) => {
     const { name, checked } = e.target;
@@ -84,7 +85,7 @@ export default function Filters({
     handleUrlFilter(urlFilterInit)
     // console.log(1)
   },[filters])
-  // console.log(2)
+  // console.log(filters)
   return (
     <Container mt={10} bg={"white"} pt={5} pb={5} width="90%" borderRadius={10}>
       <Heading size="md" fontWeight={"medium"} pb={4}>

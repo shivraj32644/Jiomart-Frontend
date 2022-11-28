@@ -15,28 +15,36 @@ import { MdLocationOn } from "react-icons/md";
 import { BsCreditCardFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../Redux/Login/action";
+import { logout, set_isauth } from "../Redux/Login/action";
 import { GetData } from "../Utils/localStorage";
-import OrderList from "../Components/OrdersList"
+import OrderList from "../Components/OrdersList";
 
 const AccountPage = () => {
   const { isAuth } = useSelector((state) => state.auth);
+  const [data, setdata] = useState({});
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-  const [orders, setOrders] = useState([])
+  const dispatch = useDispatch();
+  const [orders, setOrders] = useState([]);
+  let id = localStorage.getItem("user_id") || ""; 
   // console.log(orders)
 
-  const handleLogout = () =>{
-    dispatch(logout())
-    navigate("/account/login")
-  }
+  const handleLogout = () => {
+    dispatch(set_isauth(false));
+    localStorage.setItem("user_id", "");
+    navigate("/account/login");
+  };
 
+  let handleAccount = async () => {
+    let data1 = await fetch(`https://jiomart-server.cyclic.app/user/${id}`);
+    let data2 = await data1.json();
+    setdata(()=>data2.user);
+  };
   useEffect(() => {
-    // console.log(isAuth)
-    if (!isAuth) {
-      navigate("/account/login");
+    if (id == "" || id==null) {
+      return navigate("/account/login");
+    }else{
+      handleAccount();
     }
-    setOrders(GetData("JioMartCloneOrders"))
   }, []);
 
   return (
@@ -64,12 +72,13 @@ const AccountPage = () => {
               <CgProfile />{" "}
             </GridItem>
             <GridItem ml="-135px" w="100%" h="10" bg="#008ecc">
-              <Text as={"b"}>{`${isAuth.firstName} ${isAuth.lastName}`}</Text> <br />
+              <Text as={"b"}>{`${data.First_Name} ${data.Last_Name}`}</Text>{" "}
+              <br />
               <Text as={"i"} color={"#cecece"} fontSize={"12px"}>
-                {isAuth.email}
+                {data.Email}
               </Text>
               <Text color={"#cecece"} fontSize={"12px"}>
-                {isAuth.number}
+                {data.Mobile_Number}
               </Text>
             </GridItem>
 
@@ -145,7 +154,7 @@ const AccountPage = () => {
                 Full Name
               </Text>
               <Text fontSize={"14px"} as={"b"}>
-              {`${isAuth.firstName} ${isAuth.lastName}`}
+                {`${data.First_Name} ${data.Last_Name}`}
               </Text>
             </GridItem>
             <GridItem w="100%" h="10">
@@ -162,7 +171,7 @@ const AccountPage = () => {
                 Email id
               </Text>
               <Text fontSize={"14px"} as={"b"}>
-                {isAuth.email}
+                {data.Email}
               </Text>
             </GridItem>
 
@@ -171,7 +180,7 @@ const AccountPage = () => {
                 Mobile Number
               </Text>
               <Text fontSize={"14px"} as={"b"}>
-                {isAuth.number}
+                {data.Mobile_Number}
               </Text>
             </GridItem>
           </Grid>
@@ -217,14 +226,15 @@ const AccountPage = () => {
           </Box>
           <hr />
           <Box p={"20px"} onClick={handleLogout}>
-            <Text fontSize={"sm"} as={"b"}>
+            <Text fontSize={"sm"} as={"b"} cursor="pointer">
               Logout
             </Text>
           </Box>
         </GridItem>
 
-        <GridItem w="120%" ml='-28' >
-          {orders.map((order,index)=> <OrderList key={index} order={order} visible={false}/>)}
+        <GridItem w="120%" ml="-28">
+          {/* {orders.map((order,index)=> <OrderList key={index} order={order} visible={false}/>)} */}
+          {/* hello */}
         </GridItem>
       </Grid>
     </Box>

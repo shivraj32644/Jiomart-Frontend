@@ -22,6 +22,7 @@ export default function ListOfProducts({
   const { total, loading, error, products } = useSelector(
     (state) => state.products
   );
+  // console.log(products);
   const { baseUrl } = useAPICall();
   const [page, setPage] = useState(1);
 
@@ -31,7 +32,7 @@ export default function ListOfProducts({
   };
 
   const createUrl = (val) => {
-    let url = `${baseUrl}/products?_limit=8&_page=${
+    let url = `${baseUrl}/products?limit=8&page=${
       page + val
     }&item_category=${product_category}`;
 
@@ -44,7 +45,7 @@ export default function ListOfProducts({
     }
 
     if (sort) {
-      url += `&_sort=item_final_price&_order=${sort}`;
+      url += `&sort=item_final_price&order=${sort}`;
     }
 
     if (Discount) {
@@ -57,7 +58,7 @@ export default function ListOfProducts({
     }
 
     if (Price) {
-      url += `&item_final_price_gte=${Price.min}&item_final_price_lte=${Price.max}`;
+      url += `&range=item_final_price&gte=${Price.min}&lte=${Price.max}`;
     }
 
     // console.log(url)

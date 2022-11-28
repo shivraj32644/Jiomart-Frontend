@@ -28,8 +28,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getSingleProduct } from "../Redux/SingleProduct/action";
 import useAPICall from "../CustomHooks/useAPICall";
-import { JioButton, PlusMinusBtn } from "../Components/JioButton";
+import {  PlusMinusBtn } from "../Components/JioButton";
 import { updateCart } from "../Redux/Cart/actions";
+import { AddToCartBTN } from "../Components/AddToCartBTN";
 
 const default_image =
   "https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png";
@@ -40,13 +41,14 @@ export default function ProductDetails() {
   const { cartItems: cart } = useSelector((state) => state.cart);
   const { baseUrl } = useAPICall();
   const { product_id } = useParams();
+  // const product_id="6382fa77704d6a748b9782f2"
 
   useEffect(() => {
     const url = `${baseUrl}/products/${product_id}`;
     dispatch(getSingleProduct(url));
   }, []);
 
-  console.log(loading, error, product);
+  // console.log(loading, error, product);
 
   if (loading) {
     return (
@@ -204,9 +206,10 @@ export default function ProductDetails() {
                   dispatch(updateCart({ product, quantity: 1 }));
                 }}
               >
-                <JioButton myProduct={product} />
+                <AddToCartBTN myProduct={product} />
               </span>
             )}
+            
           </Box>
           <Spacer />
           <Text mt={"20px"} color={"black"} as={"b"}>

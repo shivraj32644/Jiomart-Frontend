@@ -7,6 +7,7 @@ import SignIn_SignUp from "../Pages/SignIn_SignUp";
 import ProductDetails from '../Pages/ProductDetails';
 import AccountPage from '../Pages/AccountPage'
 import Index from "../Pages/Index";
+import { PrivateRoute } from "./PrivateRoute";
 
 export default function AllRoutes() {
   return (
@@ -16,8 +17,8 @@ export default function AllRoutes() {
         <Route path="/products/:product_category" element={<AllProduct />} />
         <Route path='/checkout/:id' element={<Checkout/>} />
         <Route path="/account/:page" element={<SignIn_SignUp/>}/>
-        <Route path="/products/:product_category/:product_id" element={<ProductDetails/>}/>
-        <Route path="/account" element={<AccountPage/>}/>
+        <Route path="/products/:product_category/:product_id" element={<PrivateRoute><ProductDetails/></PrivateRoute>}/>
+        <Route path="/account" element={<PrivateRoute><AccountPage/></PrivateRoute>}/>
       </Routes>
     </Box>
   );

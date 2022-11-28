@@ -3,10 +3,11 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { updateCart } from "../Redux/Cart/actions";
-import { JioButton, PlusMinusBtn } from "./JioButton";
+import { AddToCartBTN } from "./AddToCartBTN";
+import {  PlusMinusBtn } from "./JioButton";
 
 export default function ProductItem({
-  id,
+  _id,
   item_img_url,
   item_final_price,
   item_price,
@@ -33,7 +34,7 @@ export default function ProductItem({
   const discountPercent = parseInt(
     !isNaN(fprice) && !isNaN(iprice) ? ((iprice - fprice) / iprice) * 100 : 0
   );
-  const link = `/products/${product_category}/${id}`
+  const link = `/products/${product_category}/${_id}`
 
   if (windowWidth <= 768) {
     return (
@@ -148,18 +149,18 @@ export default function ProductItem({
         </Box>
       ) : null}
       <Box mt={5}>
-        {id in cart ? (
-          <PlusMinusBtn product={product} />
-        ) : (
-          <span
-            onClick={() => {
-              // setcartPopUpVisible(true);
-              dispatch(updateCart({ product, quantity: 1 }));
-            }}
-          >
-            <JioButton myProduct={product} />
-          </span>
-        )}
+      {product.id in cart ? (
+              <PlusMinusBtn product={product} />
+            ) : (
+              <span
+                onClick={() => {
+                  // setcartPopUpVisible(true);
+                  dispatch(updateCart({ product, quantity: 1 }));
+                }}
+              >
+                <AddToCartBTN myProduct={product} />
+              </span>
+            )}
       </Box>
     </Box>
   );

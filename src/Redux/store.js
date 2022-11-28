@@ -5,21 +5,21 @@ import {
   legacy_createStore as createStore,
 } from "redux";
 import thunk from "redux-thunk";
-import { loginReducer } from "./Login/loginReducer";
+import { Authreduce } from "./Login/Authreducer";
 import { singleProductReducer } from "./SingleProduct/singleReducer";
 import { cartReducer } from "./Cart/cartReducer";
 import productReducer from "./Products/productReducer";
 
-const functionOrObject = (store) => (next) => (action) => {
-    if (typeof action === "function") {
-      console.log(1);
-      return action(store.dispatch);
-    }
-    return next(action);
-  };
+// const functionOrObject = (store) => (next) => (action) => {
+//     if (typeof action === "function") {
+//       console.log(1);
+//       return action(store.dispatch);
+//     }
+//     return next(action);
+//   };
 
   export const rootReducer = combineReducers({
-    auth: loginReducer,
+    auth: Authreduce,
     cart: cartReducer,
     singleProduct: singleProductReducer,
     products: productReducer,
@@ -27,8 +27,8 @@ const functionOrObject = (store) => (next) => (action) => {
 
 
 const composeEnhancers =
-  typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+  typeof window === "object" && window._REDUX_DEVTOOLS_EXTENSION_COMPOSE_
+    ? window._REDUX_DEVTOOLS_EXTENSION_COMPOSE_({
       })
     : compose;
 

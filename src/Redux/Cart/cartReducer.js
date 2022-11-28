@@ -1,7 +1,18 @@
 import { ORDER_CONFIRMED, REMOVE_FROM_CART, UPDATE_CART } from "./action_types";
-import { omit, uniq } from "lodash";
+import {  omit, uniq } from "lodash";
 import { GetData, Setdata } from "../../Utils/localStorage";
+import { getCart } from "../../service/api";
+import { useState } from "react";
 
+
+async function dataFun (){
+  let result = await getCart();
+  console.log(result);
+  localStorage.setItem("cart", JSON.stringify(result));
+  return result;
+}
+
+dataFun();
 const initialState = JSON.parse(localStorage.getItem("cart")) || {
   cartItems: {},
   additionHistory: [],

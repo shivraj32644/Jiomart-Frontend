@@ -1,4 +1,4 @@
-import { Box, Flex, Image, Text } from "@chakra-ui/react";
+import { Box, Flex, Image, Text, useToast } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -6,20 +6,23 @@ import LoginForm from "../Components/LoginForm";
 import RegisterForm from "../Components/RegisterForm";
 
 export default function SignIn_SignUp() {
+  const toast = useToast();
   const { page } = useParams();
   const [otp, setOtp] = useState("");
   const [inputOtp, setInputOtp] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const {isAuth} = useSelector(state=>state.auth)
-  const navigate = useNavigate()
-
-  if(isAuth){
-    navigate('/account')
+  const { isAuth } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  useEffect(() => {
+    setOtp(Math.floor(100000 + Math.random() * 900000));
+  }, []);
+  let user_id = localStorage.getItem("user_id") || "";
+  if (user_id != "") {
+    return navigate("/account");
   }
 
   const handleOtp = () => {
-    console.log(otp, "otp");
-    console.log(inputOtp, "inputOtp");
+    console.log(otp,inputOtp)
     return otp === parseInt(inputOtp);
   };
 
@@ -33,14 +36,14 @@ export default function SignIn_SignUp() {
   };
 
   const sendOtp = () => {
-    alert(`Your OTP is: ${otp}`)
+    toast({
+      title: `Your OTP is ${otp}`,
+      position: "top",
+      status: "success",
+      duration: 9000,
+      isClosable: true,
+    });
   };
-
-  useEffect(() => {
-    setOtp(Math.floor(100000 + Math.random() * 900000));
-  }, []);
-
-  // console.log(otp)
 
   return (
     <Box bg="#F6F6F7" pt={10} pb={5}>
@@ -61,6 +64,7 @@ export default function SignIn_SignUp() {
               inputOtp={inputOtp}
               phoneNumber={phoneNumber}
               setPhoneNumber={setPhoneNumber}
+              otp={otp}
             />
           ) : page === "register" ? (
             <RegisterForm
@@ -70,6 +74,7 @@ export default function SignIn_SignUp() {
               inputOtp={inputOtp}
               phoneNumber={phoneNumber}
               setPhoneNumber={setPhoneNumber}
+              otp={otp}
             />
           ) : (
             <Text>Page Not Found</Text>

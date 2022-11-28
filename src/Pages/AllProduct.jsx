@@ -22,7 +22,7 @@ export default function AllProduct() {
   const [windowWidth, setWindowWidth] = useState(window.outerWidth);
   const [urlFilter, setUrlFilter] = useState(urlFilterInit);
   const { product_category } = useParams();
-
+  
   const handleResize = () => {
     if (
       (windowWidth > 768 && window.outerWidth < 768) ||

@@ -9,9 +9,10 @@ import {
   InputRightElement,
   Stack,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import useAPICall from "../CustomHooks/useAPICall";
 import { Login } from "../Redux/Login/action";
@@ -29,30 +30,71 @@ const LoginForm = ({
   inputOtp,
   setPhoneNumber,
   phoneNumber,
+  otp
 }) => {
+   let{isAuth,token,loading} = useSelector(state=>state.auth);
+   const toast = useToast();
   const [otpRequestSend, setOtpRequestSend] = useState(false);
   const [msg, setMsg] = useState(initMsg);
   const navigate = useNavigate();
   const { baseUrl, getData } = useAPICall();
   const dispatch = useDispatch()
+  const [isUser,setisUser]  = useState(false)
   // let data = null;
 
+  const CheckisUser = async ()=>{
+    
+    let data = {
+      Mobile_Number : phoneNumber
+    }
+    try {
+      let res = await fetch(`https://jiomart-server.cyclic.app/auth/login`,{
+        method : 'POST',
+        body : JSON.stringify(data),
+        headers : {
+            'Content-Type': 'application/json',
+        }
+    })
+    let data2 = await res.json();
+    if(data2.token){
+      setOtpRequestSend(!otpRequestSend);
+      setisUser((user)=>!user);
+    }else if(data2.error!='wrong credentials'){
+      toast({
+        title: 'Something Went Wrong Please try again',
+        position : 'top',
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      })
+    }else{
+      return  navigate("/account/register");
+    }
+    } catch (error) {
+      
+    }
+  }
   const handleOtpSend = async () => {
-    if (
-      parseInt(phoneNumber) > 6700000000 &&
-      parseInt(phoneNumber) < 10000000000
-    ) {
-      handleMsg(initMsg);
-      const data = await getData(`${baseUrl}/users?number=${phoneNumber}`);
-      if (data.length === 0) {
-        navigate("/account/register");
-      } else {
-        setOtpRequestSend(!otpRequestSend);
+    try {
+      let obj = {
+        Mobile_Number : phoneNumber
       }
-      // console.log(phoneNumber);
-      sendOtp();
-    } else {
-      handleMsg({ status: true, notice: "invalid phone number!!!" });
+     await CheckisUser();
+      // dispatch(Login(obj,inputOtp,otp));
+     // if(isUser){
+        if (
+          parseInt(phoneNumber) > 6700000000 &&
+          parseInt(phoneNumber) < 10000000000
+        ) {
+          handleMsg(initMsg);
+          sendOtp();
+        } else {
+          handleMsg({ status: true, notice: "invalid phone number!!!" });
+        }
+     // }
+    
+    } catch (error) {
+      console.log(error)
     }
   };
 
@@ -61,7 +103,17 @@ const LoginForm = ({
       handleMsg({ status: true, notice: "Please enter the OTP!!!!" });
     } else {
       if (handleOtp()) {
-        dispatch(Login(`${baseUrl}/users?number=${phoneNumber}`))
+        let obj = {
+          Mobile_Number : phoneNumber
+        }
+         dispatch(Login(obj,inputOtp,otp))
+         toast({
+          title: 'Logged In Successfully',
+          position : 'top',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        })
         navigate("/");
       } else {
         handleMsg({ status: true, notice: "invalid otp!!!" });

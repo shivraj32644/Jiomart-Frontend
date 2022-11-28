@@ -15,7 +15,7 @@ const Navbar = () => {
   const btnRef = useRef();
   const [search, setSearch] = useState("");
   const { isAuth } = useSelector((state) => state.auth);
-
+let user_id = localStorage.getItem('user_id') || "";
   const handleChange = (e) => {
     e.preventDefault();
     setSearch(e.target.value);
@@ -98,7 +98,7 @@ const Navbar = () => {
         </GridItem>
         <GridItem rowSpan={2} colStart={4} colEnd={6} pt="15px" pl={["25px","50px","110px"]}  >
           <Box display={"flex"} justifyContent="flex-end" w={["80px","80px","160px"]}>
-            <Link to={`/account${isAuth ? "" : "/login"}`}>
+            <Link to={`/account${user_id!="" && user_id!=null ? "" : "/login"}`}>
               <Box
                 display={"flex"}
                 color="white"
@@ -111,7 +111,7 @@ const Navbar = () => {
                   width="24px"
                   alt=""
                 />
-                {isAuth ? "Account" : "SignIn"}
+                {user_id!="" && user_id!=null ? "Account" : "SignIn"}
               </Box>
             </Link>
 

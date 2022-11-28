@@ -24,3 +24,7 @@ yarn-error.log*
 
 #Dummy Components
 /src/Components/DummyHome.jsx
+.vercel
+
+# Local Netlify folder
+.netlify

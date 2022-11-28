@@ -7,17 +7,20 @@ import { getCartData } from "../Redux/Cart/actions";
 import { addToCart } from "../service/api";
 import PlusButton from "./PlusButton";
 
-const userId = localStorage.getItem("user_id") || "";
 export const AddToCartBTN = ({ product }) => {
+  const userId = localStorage.getItem("user_id") || "";
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
-  product.item_Id = product._id;
-  product.user_Id = userId;
-  product.item_quantity = 1;
+  
 
   const handlePost = () => {
+    const userId = localStorage.getItem("user_id") || "";
+    product.item_Id = product._id;
+    product.user_Id = userId;
+    product.item_quantity = 1;
+
     if (userId === "") {
       console.log(userId)
       return navigate('/account/login')

@@ -18,22 +18,19 @@ import { Spinner } from '@chakra-ui/react'
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const userId = localStorage.getItem("user_id") || "";
 export const PlusMinusBtn = ({ product }) => {
   const dispatch = useDispatch();
   const [loading, setLoading]=useState(false)
   const navigate = useNavigate();
-  if (userId === "") {
-    console.log(userId)
-    return navigate('/account/login')
-  }
- 
+  
+  const userId = localStorage.getItem("user_id") || "";
   product.item_Id = product._id;
   product.user_Id = userId;
-  // console.log(product._id)
   
   const handleInc = () => {
-    
+    const userId = localStorage.getItem("user_id") || "";
+    product.item_Id = product._id;
+    product.user_Id = userId;
     setLoading(true)
     axios.patch(`https://jiomart-server.cyclic.app/cart/incCart/${product._id}`).then((res) => {
       console.log(res);
@@ -47,6 +44,8 @@ export const PlusMinusBtn = ({ product }) => {
   };
 
   const handleDec = () => {
+
+    const userId = localStorage.getItem("user_id") || "";
     setLoading(true)
     fetch(`https://jiomart-server.cyclic.app/cart/decCart/${product._id}`, {
       mode:"cors",

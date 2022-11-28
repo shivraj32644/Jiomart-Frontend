@@ -1,13 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
+import { getCartData } from '../Redux/Cart/actions';
 import './Basket.css';
 import { PlusMinusBtn } from './JioButton';
 
-const Basket = ({ cartDetails , visible=true }) => {
-  const cards = cartDetails.products.map((product) => {
+const Basket = ({ cartDetails, visible = true }) => {
+  const dispatch = useDispatch();
+  const { cartItems } = useSelector((state) => state.cart);
+  useEffect(() => {
+    const user_id = localStorage.getItem("user_id") || ""
+    dispatch(getCartData(user_id))
+   
+  },[])
+  // console.log(cartItems);
+  var total = null;
+  const cards = cartItems?.map((product) => {
+    total += (Number(product.item_quantity)*Number(product.item_final_price))
     return (
       <div key={uuidv4()} className='cart-cards'>
         <div>
+     
           <img src={product.item_img_url} alt='pr-i' />
         </div>
         <div>
@@ -17,7 +30,7 @@ const Basket = ({ cartDetails , visible=true }) => {
           <section>
             <p>
               <span style={{ fontFamily: 'jioMedium', fontSize: '18px' }}>
-                &#8377; {product.item_final_price}
+                &#8377; {product.item_final_price*product.item_quantity}
               </span>
               <span>
                 {product.discount && (
@@ -25,7 +38,7 @@ const Basket = ({ cartDetails , visible=true }) => {
                     MRP:{' '}
                     {
                       <span style={{ textDecoration: 'line-through' }}>
-                        &#8377; {product.item_price}
+                        &#8377; {product.item_price*product.item_quantity} 
                       </span>
                     }{' '}
                   </span>
@@ -44,8 +57,9 @@ const Basket = ({ cartDetails , visible=true }) => {
   return (
     <div className='cart-item-section'>
       <div className='basket-title'>
-        <section>{`Groceries Basket (${cartDetails.totalItems} items) `}</section>
-        <section>₹{cartDetails.bill}</section>
+        
+        <section>{`Groceries Basket (${cartItems.length} items) `}</section>
+        <section>₹{total}</section>
       </div>
       {cards}
     </div>

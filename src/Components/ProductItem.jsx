@@ -1,24 +1,38 @@
 import { Box, Center, Flex, Heading, Image, Text } from "@chakra-ui/react";
 import React from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { updateCart } from "../Redux/Cart/actions";
+import { getCartData } from "../Redux/Cart/actions";
+// import { updateCart } from "../Redux/Cart/actions";
 import { AddToCartBTN } from "./AddToCartBTN";
 import {  PlusMinusBtn } from "./JioButton";
 
-export default function ProductItem({
-  _id,
-  item_img_url,
-  item_final_price,
+export default function ProductItem({ _id,item_img_url, item_final_price,
   item_price,
   item_name,
   item_disc_price,
   windowWidth,
   product,
-  product_category
+  product_category,
+  
 }) {
   const dispatch = useDispatch();
-  const { cartItems: cart } = useSelector((state) => state.cart);
+  const {  cartItems  } = useSelector((state) => state.cart);
+  useEffect(() => {
+    const user_id = localStorage.getItem("user_id") || "";
+    dispatch(getCartData(user_id))
+   
+  }, [])
+  var filterArr = [];
+  if ( Array.isArray(cartItems)) {
+    filterArr = cartItems?.filter((ele) => {
+      if (ele.item_Id === _id) return ele;
+    })
+  }
+  
+  // var filterArr = [];
+  // console.log("cart items", filterArr);
   const fprice =
     typeof item_final_price === "string"
       ? parseInt(item_final_price.split(",").join(""))
@@ -56,7 +70,8 @@ export default function ProductItem({
         <Link to={link}>
           <Box mt={2} mb={2}>
             <Heading size="sm" fontWeight={"medium"}>
-              {item_name}
+                {item_name}
+                
             </Heading>
           </Box>
           <Flex>
@@ -119,7 +134,7 @@ export default function ProductItem({
           {item_name.length < 20
             ? item_name
             : item_name.substring(0, 50) + "...."}
-        </Heading>
+          </Heading>
       </Box>
       <Flex>
         <Heading size="sm" fontWeight={"medium"}>
@@ -149,16 +164,17 @@ export default function ProductItem({
         </Box>
       ) : null}
       <Box mt={5}>
-      {product.id in cart ? (
-              <PlusMinusBtn product={product} />
+      {filterArr.length>0 ? (
+              <PlusMinusBtn product={filterArr[0]} />
             ) : (
               <span
                 onClick={() => {
                   // setcartPopUpVisible(true);
-                  dispatch(updateCart({ product, quantity: 1 }));
+                  // dispatch(updateCart({ product, quantity: 1 }));
                 }}
               >
-                <AddToCartBTN myProduct={product} />
+              <AddToCartBTN product={product} />
+              
               </span>
             )}
       </Box>

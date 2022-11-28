@@ -29,8 +29,9 @@ import { useParams } from "react-router-dom";
 import { getSingleProduct } from "../Redux/SingleProduct/action";
 import useAPICall from "../CustomHooks/useAPICall";
 import {  PlusMinusBtn } from "../Components/JioButton";
-import { updateCart } from "../Redux/Cart/actions";
+// import { updateCart } from "../Redux/Cart/actions";
 import { AddToCartBTN } from "../Components/AddToCartBTN";
+import { getCartData } from "../Redux/Cart/actions";
 
 const default_image =
   "https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png";
@@ -41,13 +42,24 @@ export default function ProductDetails() {
   const { cartItems: cart } = useSelector((state) => state.cart);
   const { baseUrl } = useAPICall();
   const { product_id } = useParams();
+  console.log(cart);
   // const product_id="6382fa77704d6a748b9782f2"
-
+  console.log(product_id)
+  useEffect(() => {
+    const user_id = localStorage.getItem("user_id")
+    dispatch(getCartData(user_id))
+   
+  },[])
   useEffect(() => {
     const url = `${baseUrl}/products/${product_id}`;
     dispatch(getSingleProduct(url));
   }, []);
-
+  var filterArr = [];
+  if ( Array.isArray(cart)) {
+    filterArr = cart?.filter((ele) => {
+      if (ele.item_Id === product_id) return ele;
+    })
+  }
   // console.log(loading, error, product);
 
   if (loading) {
@@ -197,16 +209,16 @@ export default function ProductDetails() {
             src="https://e7.pngegg.com/pngimages/739/826/png-clipart-logo-credit-card-payment-card-american-express-credit-card-text-display-advertising.png"
           />
           <Box mt={5} width='20%' mb={5}>
-            {product.id in cart ? (
-              <PlusMinusBtn product={product} />
+            {filterArr.length>0 ? (
+              <PlusMinusBtn product={filterArr[0]} />
             ) : (
               <span
                 onClick={() => {
                   // setcartPopUpVisible(true);
-                  dispatch(updateCart({ product, quantity: 1 }));
+                  // dispatch(updateCart({ product, quantity: 1 }));
                 }}
               >
-                <AddToCartBTN myProduct={product} />
+                <AddToCartBTN product={product} />
               </span>
             )}
             

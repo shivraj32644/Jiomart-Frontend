@@ -81,7 +81,7 @@ export default function ListOfProducts({
   useEffect(() => {
     setPage(1);
     getFirstProducts();
-  }, [product_category, urlFilter]);
+  }, [product_category,urlFilter]);
 
   // console.log(total!==products.length)
 

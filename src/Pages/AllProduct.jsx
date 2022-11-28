@@ -38,7 +38,7 @@ export default function AllProduct() {
   };
   useEffect(() => {
     window.addEventListener("resize", handleResize);
-  });
+  },[]);
 
   return (
     <Box bg={"#F3F3F3"}>

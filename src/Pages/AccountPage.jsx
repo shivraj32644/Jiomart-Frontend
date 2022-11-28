@@ -7,6 +7,7 @@ import {
   Heading,
   Spacer,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { CgProfile } from "react-icons/cg";
@@ -25,12 +26,21 @@ const AccountPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [orders, setOrders] = useState([]);
+  const toast = useToast();
   let id = localStorage.getItem("user_id") || ""; 
   // console.log(orders)
 
   const handleLogout = () => {
     dispatch(set_isauth(false));
     localStorage.setItem("user_id", "");
+    toast({
+      title: 'You have been successfully logged out!',
+      position : 'top',
+      status: 'success',
+      duration: 9000,
+      isClosable: true,
+    })
+
     navigate("/account/login");
   };
 

@@ -24,7 +24,7 @@ const LeftDrawer = (props) => {
   useEffect(()=>{
   
     if (id == "" || id==null) {
-     return Navigate("/account/login");
+    //  return Navigate("/account/login");
     }else{
       handleAccount();
     }
@@ -53,7 +53,7 @@ const LeftDrawer = (props) => {
               <div>
                 <div>
                   <img src="https://www.jiomart.com/msassets/images/icons/profile-sign.svg" alt="Userpic" />
-                  <h4>{id?`Hello ${data.First_Name}`:"Hello,Sign in"}</h4>
+                  <h4>{id?`Hello ${data ? data.First_Name : "Unknown"}`:"Hello,Sign in"}</h4>
                 </div>
                 <div>
                   <button onClick={openAccount}>Account</button>

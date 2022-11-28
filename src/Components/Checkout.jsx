@@ -3,26 +3,44 @@ import { useDispatch, useSelector } from "react-redux";
 import { Radio, Spin, Alert } from "antd";
 import "./Checkout.css";
 import Basket from "./Basket";
-import { updateCart } from "../Redux/Cart/actions";
+// import { updateCart } from "../Redux/Cart/actions";
 import { useNavigate, useParams } from "react-router-dom";
+import { getCartData } from "../Redux/Cart/actions";
+import axios from "axios";
 const Checkout = () => {
-  const { isAuth } = useSelector((state) => state.auth);
+  const user_id = localStorage.getItem("user_id") || "";
+  // const {  } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const { cartItems } = useSelector((state) => state.cart);
+  const [cartDetails, setCartDetails] = useState({
+    // products: [],
+    finalAmt: 0,
+    discount: 0,
+    mrp: 0,
+  });
+  
   const [state, setState] = useState(0);
+  useEffect(() => {
+    dispatch(getCartData(user_id))
+  }, [])
+  
   const { id } = useParams();
   const navigate = useNavigate();
-  const [cartDetails, setCartDetails] = useState({
-    products: [],
-    totalItems: 0,
-    bill: 0,
-    savings: 0,
-  });
+  
   useEffect(() => {
+
     if (state === 1) {
       var stateTime = setTimeout(() => {
-        dispatch(updateCart("order-confirmed"));
+        // dispatch(updateCart("order-confirmed"));
+        axios.delete(`https://jiomart-server.cyclic.app/cart/deleteall/${user_id}`)
+          .then((res) => {
+            dispatch(getCartData(user_id))
+           return navigate('/')
+          }).catch((err) => {
+            console.log(err);
+          })
         setState(2);
-      }, 8000);
+      }, 4000);
     }
 
     return () => {
@@ -30,32 +48,27 @@ const Checkout = () => {
     };
   }, [state]);
 
-  const cart = useSelector((store) => store.cart.cartItems);
+    var finalAmt = 0;
+    var discount = 0;
+    var mrp = 0; 
+    // var items = [];
+    console.log(cartItems);
+    if (cartItems) {
+      cartItems.forEach(element => {
+        mrp += (Number(element.item_quantity)*Number(element.item_final_price))
+        discount = 0
+        finalAmt += Number(element.item_final_price) * Number(element.item_quantity)
+      });
+  }
   useEffect(() => {
-    let bill = 0;
-    let itemCount = 0;
-    let tempSavings = 0;
-    let items = [];
-
-    if (cart) {
-      for (let x in cart) {
-        items.push(cart[x].product);
-        let mrp = cart[x].product.item_price;
-        if (!mrp) {
-          mrp = cart[x].product.item_final_price;
-        }
-        tempSavings += cart[x].quantity * mrp;
-        bill += cart[x].quantity * cart[x].product.item_final_price
-        itemCount = itemCount + 1;
-      }
-    }
     setCartDetails({
-      totalItems: itemCount,
-      bill: bill.toFixed(2),
-      savings: tempSavings,
-      products: items,
+      // totalItems: mrp,
+      finalAmt: finalAmt.toFixed(2),
+      discount: discount,
+      mrp: mrp,
     });
-  }, [cart]);
+    
+  },[mrp])
 
   return (
     <div className="container">
@@ -80,7 +93,7 @@ const Checkout = () => {
                   </span>
                   <button
                     onClick={() => setState(1)}
-                  >{`Pay ₹${cartDetails.bill}`}</button>
+                  >{`Pay ₹${cartDetails.finalAmt}`}</button>
                 </div>
               </Radio>
             ) : state === 1 ? (
@@ -117,7 +130,7 @@ const Checkout = () => {
           {id === "review" ? (
             <div className="heading">Order Summary</div>
           ) : (
-            <div className="heading">{`My Cart(${cartDetails.totalItems})`}</div>
+            <div className="heading">{`My Cart(${cartItems.length})`}</div>
           )}
           {id === "review" && (
             <div className="address-container">
@@ -150,24 +163,24 @@ const Checkout = () => {
             </p>
             <div>
               <p>MRP Total</p>
-              <p>₹{cartDetails.savings} </p>
+              <p>₹{cartDetails.mrp} </p>
             </div>
             <div>
               <p>Product Discount</p>
-              <p>{-(cartDetails.savings - cartDetails.bill).toFixed(2)} </p>
+              <p>{-(cartDetails.discount).toFixed(2)} </p>
             </div>
             <div>
               <p>Total Amount</p>
-              <p>₹{cartDetails.bill} </p>
+              <p>₹{cartDetails.finalAmt} </p>
             </div>
             <div style={{ justifySelf: "flex-end" }}>
-              <p>{`You Save ₹${(cartDetails.savings - cartDetails.bill).toFixed(
+              <p>{`You Save ₹${(0).toFixed(
                 2
               )}`}</p>
             </div>
           </section>
         ) : null}
-        {cartDetails.totalItems !== 0 && (
+        {cartItems.length !== 0 && (
           <section className="pay-btn">
             {id === "review" ? (
               <button onClick={() => navigate("/checkout/payment")}>
@@ -176,7 +189,7 @@ const Checkout = () => {
             ) : id === "cart" ? (
               <button
                 onClick={() =>
-                  isAuth  ? navigate("/checkout/review") : navigate("/account/login")
+                  user_id ? navigate("/checkout/review") : navigate("/account/login")
                 }
               >
                 {"Place Order"}

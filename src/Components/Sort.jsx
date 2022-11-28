@@ -72,7 +72,7 @@ export default function Sort({ handleUrlFilter, urlFilter }) {
       <Box >
         <p>
           Showing <span style={spanStyle}>{products.length}</span> of{" "}
-          <span style={spanStyle}>{total}</span> items
+          <span style={spanStyle}>{50}</span> items
         </p>
       </Box>
       <Box  mr={5}>

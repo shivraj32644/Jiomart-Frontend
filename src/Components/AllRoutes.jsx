@@ -17,7 +17,7 @@ export default function AllRoutes() {
         <Route path="/products/:product_category" element={<AllProduct />} />
         <Route path='/checkout/:id' element={<Checkout/>} />
         <Route path="/account/:page" element={<SignIn_SignUp/>}/>
-        <Route path="/products/:product_category/:product_id" element={<PrivateRoute><ProductDetails/></PrivateRoute>}/>
+        <Route path="/products/:product_category/:product_id" element={<ProductDetails/>}/>
         <Route path="/account" element={<PrivateRoute><AccountPage/></PrivateRoute>}/>
       </Routes>
     </Box>
